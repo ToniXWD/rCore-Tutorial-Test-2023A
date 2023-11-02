@@ -77,8 +77,12 @@ pub fn main() -> i32 {
                                 return -4;
                             }
                             let input_fd = input_fd as usize;
+                            // 必定分配可用描述符中编号最小的一个。由于我们刚刚关闭了描述符 0 ，
+                            // 那么在 dup 的时候一定会将它分配出去，
+                            // 于是现在应用进程的文件描述符 0 就对应到输入文件了。
                             close(0);
                             assert_eq!(dup(input_fd), 0);
+                            // 因为应用进程的后续执行不会用到输入文件原来的描述符 input_fd ，所以就将其关掉。
                             close(input_fd);
                         }
                         // output redirection
